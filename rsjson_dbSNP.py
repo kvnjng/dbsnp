@@ -44,7 +44,7 @@ def getAnnotations(primary_refsnp):
 	for i in primary_refsnp['allele_annotations']:
 		try:
 			a = i['assembly_annotation'][0]['genes'][0]['rnas'][0]['protein']['sequence_ontology'][0]['name']
-			annotations.append(a.replace('_variant', ''))
+			annotations.append(a.replace('_variant', '')) # clean up text by trimming off '_variant'
 		except:
 			continue
 	return list(set(annotations))
@@ -71,6 +71,7 @@ def createRow(rsids, chromosome, position, annotations, cur):
 			if len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) > 0:
 				writeDB([rsid, chromosome, position, ','.join(annotations)], cur)
 			elif len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) == 0:
+				# if no annotations, insert NA
 				writeDB([rsid, chromosome, position, 'NA'], cur)
 			else:
 				pass
