@@ -13,4 +13,4 @@ Each row contains rsid, chromosome, position, and function. Data will be duplica
 
 Create folder named `json_refsnp` in script's directory and place all compressed json `json.gz` files in folder.
 
-Run `python refsnp_dbsnp.py` to execute the script.
+Run `python rsjson_dbSNP.py` to execute the script.
