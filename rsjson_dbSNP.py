@@ -7,22 +7,6 @@ start_time = time.time() # measure script's run time
 
 # create database
 con = sqlite3.connect("dbsnp.151.db")
-# # Automatically commit changes
-# with con:
-# 	# Create cursor object
-# 	con.text_factory = str
-# 	cur = con.cursor()
-# 	# create tables
-# 	cur.execute("CREATE TABLE `tbl_0` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_1` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_2` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_3` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_4` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_5` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_6` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_7` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_8` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-# 	cur.execute("CREATE TABLE `tbl_9` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
 
 # find merged rs numbers
 def getRSIDs(primary_refsnp):
@@ -66,6 +50,20 @@ def getAnnotations(primary_refsnp):
 	return list(set(annotations))
 
 
+# create tables in database
+def createTables(cur):
+	cur.execute("CREATE TABLE `tbl_0` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_1` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_2` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_3` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_4` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_5` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_6` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_7` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_8` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_9` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	print "Table creation is completed."
+
 # write output from parsing json files
 def createRow(rsids, chromosome, position, annotations, cur):
 	if len(rsids) > 0:
@@ -80,11 +78,6 @@ def createRow(rsids, chromosome, position, annotations, cur):
 
 # write row to sqlite database
 def writeDB(row, cur):
-	# Automatically commit changes
-	# with con:
-	# 	# Create cursor object
-	# 	con.text_factory = str
-	# 	cur = con.cursor()
 	id, chr, bp, funct = row
 	temp = (id, chr, bp, funct)
 	# Insert data rows
@@ -93,11 +86,6 @@ def writeDB(row, cur):
 
 # index database by id after insertions completed
 def indexDB(cur):
-	# Automatically commit changes
-	# with con:
-	# 	# Create cursor object
-	# 	con.text_factory = str
-	# 	cur = con.cursor()
 	cur.execute("CREATE INDEX `index_0` ON `tbl_0` ( `id` );")
 	cur.execute("CREATE INDEX `index_1` ON `tbl_1` ( `id` );")
 	cur.execute("CREATE INDEX `index_2` ON `tbl_2` ( `id` );")
@@ -118,35 +106,27 @@ def main():
 		con.text_factory = str
 		cur = con.cursor()
 		# create tables
-		cur.execute("CREATE TABLE `tbl_0` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_1` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_2` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_3` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_4` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_5` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_6` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_7` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_8` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-		cur.execute("CREATE TABLE `tbl_9` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-	# iterate through each file in directory
-	input_dir = 'json_refsnp/'
-	for filename in os.listdir(input_dir):
-		# cnt = 0
-		with gzip.open(input_dir + filename, 'rb') as f_in:
-			for line in f_in:
-				rs_obj = json.loads(line.decode('utf-8'))
-				if 'primary_snapshot_data' in rs_obj:
-					rsids = getRSIDs(rs_obj)
-					chromosome = getChromosome(f_in)
-					position = getPosition(rs_obj)
-					annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-					# create and insert row into sqlite database
-					createRow(rsids, chromosome, position, annotations, cur)
-				# cnt = cnt + 1
-				# if (cnt > 200):
-				# 	break
-	# index sqlite database by id once insertions are completed
-	indexDB(cur)
+		createTables(cur)
+		# iterate through each file in directory
+		input_dir = 'json_refsnp/'
+		for filename in os.listdir(input_dir):
+			# cnt = 0
+			with gzip.open(input_dir + filename, 'rb') as f_in:
+				for line in f_in:
+					rs_obj = json.loads(line.decode('utf-8'))
+					if 'primary_snapshot_data' in rs_obj:
+						rsids = getRSIDs(rs_obj)
+						chromosome = getChromosome(f_in)
+						position = getPosition(rs_obj)
+						annotations = getAnnotations(rs_obj['primary_snapshot_data'])
+						# create and insert row into sqlite database
+						createRow(rsids, chromosome, position, annotations, cur)
+					# cnt = cnt + 1
+					# if (cnt > 500):
+					# 	break
+		print "Table insertion is completed."
+		# index sqlite database by id once insertions are completed
+		indexDB(cur)
 	# Close the connection
 	con.close()
 	# print script's run time when finshed
