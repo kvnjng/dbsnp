@@ -1,11 +1,12 @@
-import argparse
 import json
 import gzip
-import csv
 import os
-
+import sqlite3
 import time
 start_time = time.time() # measure script's run time
+
+# connect to database
+con = sqlite3.connect("dbSNP_151.db")
 
 # find merged rs numbers
 def getRSIDs(primary_refsnp):
@@ -49,17 +50,63 @@ def getAnnotations(primary_refsnp):
 	return list(set(annotations))
 
 
-# write output from parsing json to text file
-def writeOutput(rsids, chromosome, position, annotations):
-	with open('chr_' + chromosome + '.txt', 'a') as f:
-		if len(rsids) > 0:
-			for rsid in rsids:
-				if len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) > 0:
-					f.write('\t'.join([rsid, chromosome, position, ','.join(annotations)]) + '\n')
-				elif len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) == 0:
-					f.write('\t'.join([rsid, chromosome, position]) + '\n')
-				else:
-					pass
+# write output from parsing json files
+def createRow(rsids, chromosome, position, annotations):
+	# with open('chr_' + chromosome + '.txt', 'a') as f:
+	if len(rsids) > 0:
+		for rsid in rsids:
+			if len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) > 0:
+				# f.write('\t'.join([rsid, chromosome, position, ','.join(annotations)]) + '\n')
+				writeDB([rsid, chromosome, position, ','.join(annotations)])
+			elif len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) == 0:
+				# f.write('\t'.join([rsid, chromosome, position, 'NA']) + '\n')
+				writeDB([rsid, chromosome, position, 'NA'])
+			else:
+				pass
+
+
+# write row to sqlite database
+def writeDB(row):
+	# Automatically commit changes
+	with con:
+		# Create cursor object
+		con.text_factory = str
+		cur = con.cursor()
+		id, chr, bp, funct = row
+		temp = (id, chr, bp, funct)
+		# Insert data rows
+		cur.execute("INSERT INTO tbl_"+id[-1]+" VALUES (?,?,?,?)", temp)
+
+
+# index database by id after insertions completed
+def indexDB():
+	# Automatically commit changes
+	with con:
+		# Create cursor object
+		con.text_factory = str
+		cur = con.cursor()
+		sql=("CREATE INDEX `index_0` ON `tbl_0` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_1` ON `tbl_1` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_2` ON `tbl_2` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_3` ON `tbl_3` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_4` ON `tbl_4` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_5` ON `tbl_5` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_6` ON `tbl_6` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_7` ON `tbl_7` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_8` ON `tbl_8` ( `id` );")
+		cur.execute(sql)
+		sql=("CREATE INDEX `index_9` ON `tbl_9` ( `id` );")
+		cur.execute(sql)
+		print "Table indexing is completed."
+
 
 # iterate through each file in directory
 def main():
@@ -70,17 +117,20 @@ def main():
 			for line in f_in:
 				rs_obj = json.loads(line.decode('utf-8'))
 				if 'primary_snapshot_data' in rs_obj:
-					# print rs_obj['refsnp_id']
 					rsids = getRSIDs(rs_obj)
 					chromosome = getChromosome(f_in)
 					position = getPosition(rs_obj)
 					annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-					writeOutput(rsids, chromosome, position, annotations)
-					# print("")
+					# create and insert row into sqlite database
+					createRow(rsids, chromosome, position, annotations)
 				cnt = cnt + 1
 				if (cnt > 20):
 					break
-	# measure script's run time
+	# index sqlite database by id once insertions are completed
+	indexDB()
+	# Close the connection
+	con.close()
+	# print script's run time when finshed
 	print("--- %s seconds ---" % (time.time() - start_time))
 
 
