@@ -5,8 +5,24 @@ import sqlite3
 import time
 start_time = time.time() # measure script's run time
 
-# connect to database
-con = sqlite3.connect("dbSNP_151.db")
+# create database
+con = sqlite3.connect("dbsnp.151.db")
+# Automatically commit changes
+with con:
+	# Create cursor object
+	con.text_factory = str
+	cur = con.cursor()
+	# create tables
+	cur.execute("CREATE TABLE `tbl_0` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_1` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_2` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_3` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_4` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_5` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_6` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_7` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_8` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `tbl_9` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
 
 # find merged rs numbers
 def getRSIDs(primary_refsnp):
@@ -85,26 +101,16 @@ def indexDB():
 		# Create cursor object
 		con.text_factory = str
 		cur = con.cursor()
-		sql=("CREATE INDEX `index_0` ON `tbl_0` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_1` ON `tbl_1` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_2` ON `tbl_2` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_3` ON `tbl_3` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_4` ON `tbl_4` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_5` ON `tbl_5` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_6` ON `tbl_6` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_7` ON `tbl_7` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_8` ON `tbl_8` ( `id` );")
-		cur.execute(sql)
-		sql=("CREATE INDEX `index_9` ON `tbl_9` ( `id` );")
-		cur.execute(sql)
+		cur.execute("CREATE INDEX `index_0` ON `tbl_0` ( `id` );")
+		cur.execute("CREATE INDEX `index_1` ON `tbl_1` ( `id` );")
+		cur.execute("CREATE INDEX `index_2` ON `tbl_2` ( `id` );")
+		cur.execute("CREATE INDEX `index_3` ON `tbl_3` ( `id` );")
+		cur.execute("CREATE INDEX `index_4` ON `tbl_4` ( `id` );")
+		cur.execute("CREATE INDEX `index_5` ON `tbl_5` ( `id` );")
+		cur.execute("CREATE INDEX `index_6` ON `tbl_6` ( `id` );")
+		cur.execute("CREATE INDEX `index_7` ON `tbl_7` ( `id` );")
+		cur.execute("CREATE INDEX `index_8` ON `tbl_8` ( `id` );")
+		cur.execute("CREATE INDEX `index_9` ON `tbl_9` ( `id` );")
 		print "Table indexing is completed."
 
 
