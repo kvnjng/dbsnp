@@ -2,6 +2,7 @@ import argparse
 import json
 import gzip
 import csv
+import os
 
 import time
 start_time = time.time() # measure script's run time
@@ -70,23 +71,24 @@ def writeOutput(rsids, chromosome, position, annotations):
 					pass
 
 # main
-parser = argparse.ArgumentParser(description='Example of parsing JSON RefSNP Data')
-parser.add_argument('-i', dest='input_fn', required=True, help='The name of the input file to parse')
-args = parser.parse_args()
-# cnt = 0
-with gzip.open(args.input_fn, 'rb') as f_in:
-	for line in f_in:
-		rs_obj = json.loads(line.decode('utf-8'))
-		if 'primary_snapshot_data' in rs_obj:
-			# print rs_obj['refsnp_id']
-			rsids = getRSIDs(rs_obj)
-			chromosome = getChromosome(f_in)
-			position = getPosition(rs_obj)
-			annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-			writeOutput(rsids, chromosome, position, annotations)
-			# print("")
-		# cnt = cnt + 1
-		# if (cnt > 1000):
-		# 	break
+
+# iterate through each file in directory
+input_dir = 'json_refsnp/'
+for filename in os.listdir(input_dir):
+	cnt = 0
+	with gzip.open(input_dir + filename, 'rb') as f_in:
+		for line in f_in:
+			rs_obj = json.loads(line.decode('utf-8'))
+			if 'primary_snapshot_data' in rs_obj:
+				# print rs_obj['refsnp_id']
+				rsids = getRSIDs(rs_obj)
+				chromosome = getChromosome(f_in)
+				position = getPosition(rs_obj)
+				annotations = getAnnotations(rs_obj['primary_snapshot_data'])
+				writeOutput(rsids, chromosome, position, annotations)
+				# print("")
+			cnt = cnt + 1
+			if (cnt > 20):
+				break
 
 print("--- %s seconds ---" % (time.time() - start_time)) # measure script's run time
