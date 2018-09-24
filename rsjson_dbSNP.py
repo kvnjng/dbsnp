@@ -31,8 +31,8 @@ def getPosition(primary_refsnp):
 			assembly = i['placement_annot']['seq_id_traits_by_assembly'][0]['assembly_name']
 			is_chrom = i['placement_annot']['seq_id_traits_by_assembly'][0]['is_chromosome']
 			pos = i['alleles'][0]['allele']['spdi']['position']
+			# only choose bp from GRCh37.p13
 			if is_chrom == True and assembly == "GRCh37.p13":
-				# assemblies.append("=".join([assembly,str(position)]))
 				position = str(pos)
 	return position
 			
@@ -49,18 +49,9 @@ def getAnnotations(primary_refsnp):
 	return list(set(annotations))
 
 
+# write output from parsing json to text file
 def writeOutput(rsids, chromosome, position, annotations):
-	# print rsids
-	# print position
-	# print annotations
-	# print ""
 	with open('chr_' + chromosome + '.txt', 'a') as f:
-		# if len(rsids) > 0 and len(position) > 0 and len(annotations) > 0:
-		# 	f.write('\t'.join([','.join(rsids), position, ','.join(annotations)]) + '\n')
-		# elif len(rsids) > 0 and len(position) > 0 and len(annotations) == 0:
-		# 	f.write('\t'.join([','.join(rsids), position]) + '\n')
-		# else:
-		# 	pass
 		if len(rsids) > 0:
 			for rsid in rsids:
 				if len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) > 0:
@@ -70,25 +61,29 @@ def writeOutput(rsids, chromosome, position, annotations):
 				else:
 					pass
 
-# main
-
 # iterate through each file in directory
-input_dir = 'json_refsnp/'
-for filename in os.listdir(input_dir):
-	cnt = 0
-	with gzip.open(input_dir + filename, 'rb') as f_in:
-		for line in f_in:
-			rs_obj = json.loads(line.decode('utf-8'))
-			if 'primary_snapshot_data' in rs_obj:
-				# print rs_obj['refsnp_id']
-				rsids = getRSIDs(rs_obj)
-				chromosome = getChromosome(f_in)
-				position = getPosition(rs_obj)
-				annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-				writeOutput(rsids, chromosome, position, annotations)
-				# print("")
-			cnt = cnt + 1
-			if (cnt > 20):
-				break
+def main():
+	input_dir = 'json_refsnp/'
+	for filename in os.listdir(input_dir):
+		cnt = 0
+		with gzip.open(input_dir + filename, 'rb') as f_in:
+			for line in f_in:
+				rs_obj = json.loads(line.decode('utf-8'))
+				if 'primary_snapshot_data' in rs_obj:
+					# print rs_obj['refsnp_id']
+					rsids = getRSIDs(rs_obj)
+					chromosome = getChromosome(f_in)
+					position = getPosition(rs_obj)
+					annotations = getAnnotations(rs_obj['primary_snapshot_data'])
+					writeOutput(rsids, chromosome, position, annotations)
+					# print("")
+				cnt = cnt + 1
+				if (cnt > 20):
+					break
+	# measure script's run time
+	print("--- %s seconds ---" % (time.time() - start_time))
 
-print("--- %s seconds ---" % (time.time() - start_time)) # measure script's run time
+
+if __name__ == "__main__":
+	main()
+
