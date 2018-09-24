@@ -68,14 +68,11 @@ def getAnnotations(primary_refsnp):
 
 # write output from parsing json files
 def createRow(rsids, chromosome, position, annotations):
-	# with open('chr_' + chromosome + '.txt', 'a') as f:
 	if len(rsids) > 0:
 		for rsid in rsids:
 			if len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) > 0:
-				# f.write('\t'.join([rsid, chromosome, position, ','.join(annotations)]) + '\n')
 				writeDB([rsid, chromosome, position, ','.join(annotations)])
 			elif len(rsid) > 0 and len(chromosome) > 0 and len(position) > 0 and len(annotations) == 0:
-				# f.write('\t'.join([rsid, chromosome, position, 'NA']) + '\n')
 				writeDB([rsid, chromosome, position, 'NA'])
 			else:
 				pass
