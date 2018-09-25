@@ -1,0 +1,1 @@
+python rsjson_dbSNP.py

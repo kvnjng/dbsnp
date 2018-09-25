@@ -95,7 +95,7 @@ def main():
 		# iterate through each file in directory
 		input_dir = 'json_refsnp/'
 		for filename in os.listdir(input_dir):
-			cnt = 0
+			# cnt = 0
 			with gzip.open(input_dir + filename, 'rb') as f_in:
 				for line in f_in:
 					rs_obj = json.loads(line.decode('utf-8'))
@@ -106,9 +106,9 @@ def main():
 						annotations = getAnnotations(rs_obj['primary_snapshot_data'])
 						# create and insert row into sqlite database
 						createRow(rsids, chromosome, position, annotations, cur)
-					cnt = cnt + 1
-					if (cnt > 100):
-						break
+					# cnt = cnt + 1
+					# if (cnt > 100):
+					# 	break
 		print "Table insertion is completed."
 		# index sqlite database by id once insertions are completed
 		indexDB(cur)
