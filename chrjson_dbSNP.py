@@ -6,7 +6,7 @@ import time
 start_time = time.time() # measure script's run time
 
 # create database
-con = sqlite3.connect("dbsnp.rs.151.db")
+con = sqlite3.connect("dbsnp.chr.151.db")
 
 # find merged rs numbers
 def getRSIDs(primary_refsnp):
@@ -52,8 +52,10 @@ def getAnnotations(primary_refsnp):
 
 # create tables in database
 def createTables(cur):
-	for i in xrange(0, 10): # 1-10 inclusive
-		cur.execute("CREATE TABLE `tbl_" + str(i) + "` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	for i in xrange(1, 23): # 1-22 inclusive
+		cur.execute("CREATE TABLE `chr_" + str(i) +"` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `chr_X` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
+	cur.execute("CREATE TABLE `chr_Y` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
 	print "Table creation is completed."
 
 # write output from parsing json files
@@ -74,13 +76,15 @@ def writeDB(row, cur):
 	id, chr, bp, funct = row
 	temp = (id, chr, bp, funct)
 	# Insert data rows
-	cur.execute("INSERT INTO tbl_"+id[-1]+" VALUES (?,?,?,?)", temp)
+	cur.execute("INSERT INTO chr_" + chr + " VALUES (?,?,?,?)", temp)
 
 
 # index database by id after insertions completed
 def indexDB(cur):
-	for i in xrange(0, 10): # 1-10 inclusive
-		cur.execute("CREATE INDEX `index_" + str(i) + "` ON `tbl_" + str(i) + "` ( `id` );")
+	for i in xrange(1, 23): # 1-22 inclusive
+		cur.execute("CREATE INDEX `index_" + str(i) + "` ON `chr_" + str(i) + "` ( `chromosome` );")
+	cur.execute("CREATE INDEX `index_X` ON `chr_X` ( `chromosome` );")
+	cur.execute("CREATE INDEX `index_Y` ON `chr_Y` ( `chromosome` );")
 	print "Table indexing is completed."
 
 
