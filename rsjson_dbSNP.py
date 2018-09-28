@@ -81,6 +81,8 @@ def writeDB(row, cur):
 def indexDB(cur):
 	for i in xrange(0, 10): # 1-10 inclusive
 		cur.execute("CREATE INDEX `index_" + str(i) + "` ON `tbl_" + str(i) + "` ( `id` );")
+
+		# "CREATE INDEX `index_%s` ON `tbl_%s` ( `id` );" % (i, i)
 	print "Table indexing is completed."
 
 
@@ -96,19 +98,27 @@ def main():
 		input_dir = 'json_refsnp/'
 		for filename in os.listdir(input_dir):
 			# cnt = 0
+			print filename
 			with gzip.open(input_dir + filename, 'rb') as f_in:
-				for line in f_in:
-					rs_obj = json.loads(line.decode('utf-8'))
-					if 'primary_snapshot_data' in rs_obj:
-						rsids = getRSIDs(rs_obj)
-						chromosome = getChromosome(f_in)
-						position = getPosition(rs_obj)
-						annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-						# create and insert row into sqlite database
-						createRow(rsids, chromosome, position, annotations, cur)
-					# cnt = cnt + 1
-					# if (cnt > 1000):
-					# 	break
+				try:
+					for line in f_in:
+						try:
+							rs_obj = json.loads(line.decode('utf-8'))
+							if 'primary_snapshot_data' in rs_obj:
+								rsids = getRSIDs(rs_obj)
+								chromosome = getChromosome(f_in)
+								position = getPosition(rs_obj)
+								annotations = getAnnotations(rs_obj['primary_snapshot_data'])
+								# create and insert row into sqlite database
+								createRow(rsids, chromosome, position, annotations, cur)
+						except:
+							print "there was an error reading line from input file"
+							print line
+				except:
+					print "there was an error with input file"				
+				# cnt = cnt + 1
+				# if (cnt > 1000):
+				# 	break
 		print "Table insertion is completed."
 		# index sqlite database by id once insertions are completed
 		indexDB(cur)
