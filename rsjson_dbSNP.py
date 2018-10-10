@@ -100,7 +100,7 @@ def main():
 			print filename
 			with gzip.open(input_dir + filename, 'rb') as f_in:
 				try:
-					cnt = 0
+					# cnt = 0
 					for line in f_in:
 						try:
 							rs_obj = json.loads(line.decode('utf-8'))
@@ -111,9 +111,9 @@ def main():
 								annotations = getAnnotations(rs_obj['primary_snapshot_data'])
 								# create and insert row into sqlite database
 								createRow(rsids, chromosome, position, annotations, cur)
-								cnt = cnt + 1
-								if (cnt > 100):
-									break
+								# cnt = cnt + 1
+								# if (cnt > 100):
+								# 	break
 						except:
 							print "there was an error with line in file: " + str(line)
 				except:
