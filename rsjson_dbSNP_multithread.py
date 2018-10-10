@@ -25,7 +25,7 @@ def indexDB(cur):
 
 def createSubprocess(filename):
 	args = ["python", "rsjson_dbSNP_sub.py", filename]
-	process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	process = subprocess.Popen(args, shell=True)
 	return process
 
 
@@ -57,6 +57,7 @@ def main():
 
 	exit_codes = [p.wait() for p in processes]
 	print exit_codes
+
 	if (len(exit_codes) == 24 and all(x == 0 for x in exit_codes)):
 		print "success! :)"
 		# create database
