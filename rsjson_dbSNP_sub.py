@@ -45,12 +45,6 @@ def getAnnotations(primary_refsnp):
 	return list(set(annotations))
 
 
-# create tables in database
-def createTables(cur):
-	for i in xrange(0, 10): # 1-10 inclusive
-		cur.execute("CREATE TABLE `tbl_" + str(i) + "` (`id` INTEGER, `chromosome` TEXT, `position` TEXT, `function` TEXT);")
-	print "Table creation is completed."
-
 # write output from parsing json files
 def createRow(rsids, chromosome, position, annotations, tmp_dir, filename):
 	if len(rsids) > 0:
@@ -84,7 +78,6 @@ def main():
                         chromosome = getChromosome(f_in)
                         position = getPosition(rs_obj)
                         annotations = getAnnotations(rs_obj['primary_snapshot_data'])
-                        # create and insert row into sqlite database
                         createRow(rsids, chromosome, position, annotations, tmp_dir, filename)
                         # cnt = cnt + 1
                         # if (cnt > 300):

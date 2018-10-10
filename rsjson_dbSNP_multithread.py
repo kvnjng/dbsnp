@@ -23,12 +23,6 @@ def indexDB(cur):
 	print "Table indexing is completed."
 
 
-def createSubprocess(filename):
-	args = ["python", "rsjson_dbSNP_sub.py", filename]
-	process = subprocess.Popen(args, shell=True)
-	return process
-
-
 def insertRows(tmp_dir, cur):
 	for filename in os.listdir(tmp_dir):
 		with open(tmp_dir + filename) as fp:
@@ -53,7 +47,9 @@ def main():
 	for filename in os.listdir(input_dir):
 		print "start subprocess for: " + filename.split('.')[0]
 		# create subprocess for each file
-		processes.append(createSubprocess(filename))
+		args = ["python", "rsjson_dbSNP_sub.py", filename]
+		p = subprocess.Popen(args, shell=True)
+		processes.append(p)
 
 	exit_codes = [p.wait() for p in processes]
 	print exit_codes
