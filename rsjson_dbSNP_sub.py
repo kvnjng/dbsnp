@@ -87,7 +87,7 @@ def main():
                         # create and insert row into sqlite database
                         createRow(rsids, chromosome, position, annotations, tmp_dir, filename)
                         # cnt = cnt + 1
-                        # if (cnt > 10):
+                        # if (cnt > 100):
                         #     break
                 except:
                     print "there was an error with line in file: " + str(line)

@@ -24,7 +24,8 @@ def indexDB(cur):
 
 
 def createSubprocess(filename):
-	process = subprocess.Popen("python rsjson_dbSNP_sub.py " + filename, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	args = ["python", "rsjson_dbSNP_sub.py", filename]
+	process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	return process
 
 
