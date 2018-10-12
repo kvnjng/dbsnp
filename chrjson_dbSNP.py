@@ -109,31 +109,34 @@ def main():
         # iterate through each file in directory
         input_dir = 'json_refsnp/'
         for filename in os.listdir(input_dir):
-            print filename
+            # print filename
             with gzip.open(input_dir + filename, 'rb') as f_in:
-                try:
-                    # cnt = 0
-                    for line in f_in:
-                        try:
-                            rs_obj = json.loads(line.decode('utf-8'))
-                            if 'primary_snapshot_data' in rs_obj:
-                                rsids = getRSIDs(rs_obj)
-                                chromosome = getChromosome(f_in)
-                                position = getPosition(rs_obj)
-                                annotations = getAnnotations(
-                                    rs_obj['primary_snapshot_data'])
-                                # create and insert row into sqlite database
-                                createRow(rsids, chromosome,
-                                          position, annotations, cur)
-                                # cnt = cnt + 1
-                                # if (cnt > 1000):
-                                # 	break
-                        except:
-                            print "there was an error with line in file: " + \
-                                str(line)
-                except:
-                    print "there was an error with input file: " + \
-                        str(filename)
+                # try:
+                # cnt = 0
+                for line in f_in:
+                    try:
+                        rs_obj = json.loads(line.decode('utf-8'))
+                        if 'primary_snapshot_data' in rs_obj:
+                            rsids = getRSIDs(rs_obj)
+                            chromosome = getChromosome(f_in)
+                            position = getPosition(rs_obj)
+                            annotations = getAnnotations(
+                                rs_obj['primary_snapshot_data'])
+                            # create and insert row into sqlite database
+                            createRow(rsids, chromosome,
+                                      position, annotations, cur)
+                            # cnt = cnt + 1
+                            # if (cnt > 1000):
+                            # 	break
+                    except:
+                        print "there was an error with line in file (file): " + \
+                            str(filename)
+                        print "there was an error with line in file (line): " + \
+                            str(line)
+                        pass
+                # except:
+                #     print "there was an error with input file: " + \
+                #         str(filename)
 
         print "Table insertion is completed."
         # index sqlite database by id once insertions are completed
